@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NUnit.Framework.Internal.Builders;
@@ -9,50 +10,40 @@ namespace NUnit.Framework.Internal
     [TestFixture]
     public class GenericTypeInferenceTests
     {
-        private static readonly object[][] GetTypeArgumentsForMethodCases =
+        private static readonly Expression<Action>[] TestCasesThatShouldWorkExactlyLikeTheCompiler =
         {
-            new object[]
-            {
-                GetMethodInfo(() => SimpleGenericMethod(0)), 
-                new object[] { default(int) }, 
-                new [] {typeof(int)}
-            }, 
-            new object[]
-            {
-                GetMethodInfo(() => SimpleGenericMethod(0)), 
-                new object[] { default(long) }, 
-                new [] {typeof(long)}
-            }, 
-            new object[]
-            {
-                GetMethodInfo(() => SimpleGenericMethod(0)), 
-                new object[] { default(double) }, 
-                new [] {typeof(double)}
-            }, 
-            new object[]
-            {
-                GetMethodInfo(() => SimpleGenericMethod(0)), 
-                new object[] { new object() }, 
-                new [] {typeof(object)}
-            }, 
-            new object[]
-            {
-                GetMethodInfo(() => SimpleGenericMethod(0)), 
-                new object[] { "Hello, World!" }, 
-                new [] {typeof(string)}
-            }, 
-            new object[]
-            {
-                GetMethodInfo(() => SimpleGenericMethod2((int?)0)), 
-                new object[] { (int?)0 }, 
-                new [] {typeof(int)}
-            }, 
+            () => SimpleGenericMethod(0), 
+            () => SimpleGenericMethod(0L), 
+            () => SimpleGenericMethod(0M), 
+            () => SimpleGenericMethod(0.0), 
+            () => SimpleGenericMethod(0.0F), 
+            () => SimpleGenericMethod(new object()), 
+            () => SimpleGenericMethod("Hello, World!"), 
+            () => SimpleGenericMethodWith2Args(0, 0), 
+            () => SimpleGenericMethodWith2Args(0, 0L), 
+            () => SimpleGenericMethodWith2Args(0L, 0.0), 
+            () => MoreComplexGenericMethod((int?)0), 
         };
 
-        [Test]
-        [TestCaseSource("GetTypeArgumentsForMethodCases")]
-        public void GetTypeArgumentsForMethod(MethodInfo methodInfo, object[] arglist, Type[] expected)
+        private static readonly Expression<Action>[] TestCasesThatShouldFail =
         {
+            // should fail...
+            () => SimpleGenericMethodWith2Args<object>(0.0, 0m), 
+        };
+
+        // todo make a new test method
+        // todo this 
+        [Test]
+        [TestCaseSource("TestCasesThatShouldWorkExactlyLikeTheCompiler")]
+        public void GetTypeArgumentsForMethod2(Expression<Action> genericMethodInvocation)
+        {
+            var methodCallExpression = (genericMethodInvocation.Body as MethodCallExpression);
+            var methodInfo = methodCallExpression.Method;
+            
+            var expected = methodInfo.GetGenericArguments();
+
+            var arglist = methodCallExpression.Arguments.AsEnumerable().Select(x => Expression.Lambda(x).Compile().DynamicInvoke()).ToArray();
+
             Type[] typeArguments = GenericTypeInferenceHelper.GetTypeArgumentsForMethod(methodInfo, arglist);
             Assert.That(typeArguments, Is.EqualTo(expected));
         }
@@ -61,10 +52,15 @@ namespace NUnit.Framework.Internal
         {
         }
 
-        public static void SimpleGenericMethod2<TType>(TType? arg)
+        public static void SimpleGenericMethodWith2Args<TType>(TType arg1, TType arg2)
+        {
+        }
+
+        public static void MoreComplexGenericMethod<TType>(TType? arg)
             where TType : struct
         {
         }
+
 
         // Utility method for type-safe retrieval of a method info from a lambda.
         // Replacement for the upcoming nameof() operator in C# 6.
