@@ -245,6 +245,7 @@
     <Compile Include="Interfaces\XmlNode.cs" />
     <Compile Include="Internal\AssemblyHelper.cs" />
     <Compile Include="Internal\AssemblyReader.cs" />
+    <Compile Include="Internal\Builders\GenericTypeInference.cs" />
     <Compile Include="Internal\Builders\CombinatorialStrategy.cs" />
     <Compile Include="Interfaces\ICombiningStrategy.cs" />
     <Compile Include="Internal\Builders\DatapointProvider.cs" />

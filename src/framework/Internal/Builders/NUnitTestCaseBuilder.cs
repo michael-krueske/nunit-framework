@@ -193,7 +193,7 @@ namespace NUnit.Framework.Internal.Builders
 #if !NETCF
             if (testMethod.Method.IsGenericMethodDefinition)
             {
-                Type[] typeArguments = GetTypeArgumentsForMethod(testMethod.Method, arglist);
+                Type[] typeArguments = GenericTypeInference.GetTypeArgumentsForMethod(testMethod.Method, arglist);
                 foreach (object o in typeArguments)
                     if (o == null)
                     {
@@ -210,37 +210,6 @@ namespace NUnit.Framework.Internal.Builders
 
             return true;
         }
-
-#if !NETCF
-        private static Type[] GetTypeArgumentsForMethod(MethodInfo method, object[] arglist)
-        {
-            Type[] typeParameters = method.GetGenericArguments();
-            Type[] typeArguments = new Type[typeParameters.Length];
-            ParameterInfo[] parameters = method.GetParameters();
-
-            for (int typeIndex = 0; typeIndex < typeArguments.Length; typeIndex++)
-            {
-                Type typeParameter = typeParameters[typeIndex];
-
-                for (int argIndex = 0; argIndex < parameters.Length; argIndex++)
-                {
-                    if (parameters[argIndex].ParameterType.Equals(typeParameter))
-                    {
-                        // If a null arg is provided, pass null as the Type
-                        // BestCommonType knows how to deal with this
-                        Type argType = arglist[argIndex] != null
-                            ? arglist[argIndex].GetType()
-                            : null;
-                        typeArguments[typeIndex] = TypeHelper.BestCommonType(
-                            typeArguments[typeIndex],
-                            argType);
-                    }
-                }
-            }
-
-            return typeArguments;
-        }
-#endif
 
         private static MethodInfo GetExceptionHandler(Type fixtureType, string name)
         {
