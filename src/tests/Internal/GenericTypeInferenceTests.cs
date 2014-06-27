@@ -41,6 +41,12 @@ namespace NUnit.Framework.Internal
                 new object[] { "Hello, World!" }, 
                 new [] {typeof(string)}
             }, 
+            new object[]
+            {
+                GetMethodInfo(() => SimpleGenericMethod2((int?)0)), 
+                new object[] { (int?)0 }, 
+                new [] {typeof(int)}
+            }, 
         };
 
         [Test]
@@ -52,6 +58,11 @@ namespace NUnit.Framework.Internal
         }
 
         public static void SimpleGenericMethod<TType>(TType arg)
+        {
+        }
+
+        public static void SimpleGenericMethod2<TType>(TType? arg)
+            where TType : struct
         {
         }
 
