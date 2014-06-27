@@ -53,7 +53,7 @@ namespace NUnit.Framework.Internal
         [TestCaseSource("GetTypeArgumentsForMethodCases")]
         public void GetTypeArgumentsForMethod(MethodInfo methodInfo, object[] arglist, Type[] expected)
         {
-            Type[] typeArguments = GenericTypeInference.GetTypeArgumentsForMethod(methodInfo, arglist);
+            Type[] typeArguments = GenericTypeInferenceHelper.GetTypeArgumentsForMethod(methodInfo, arglist);
             Assert.That(typeArguments, Is.EqualTo(expected));
         }
 

@@ -7,7 +7,7 @@ namespace NUnit.Framework.Internal.Builders
     /// <summary>
     /// Utility class for supporting generic type inference.
     /// </summary>
-    public static class GenericTypeInference
+    public static class GenericTypeInferenceHelper
     {
         /// <summary>
         /// 
