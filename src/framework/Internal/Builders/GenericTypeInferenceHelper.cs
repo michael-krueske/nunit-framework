@@ -27,7 +27,7 @@ namespace NUnit.Framework.Internal.Builders
 
                 for (int argIndex = 0; argIndex < parameters.Length; argIndex++)
                 {
-                    if (parameters[argIndex].ParameterType.Equals(typeParameter))
+                    if (parameters[argIndex].ParameterType == typeParameter)
                     {
                         // If a null arg is provided, pass null as the Type
                         // BestCommonType knows how to deal with this
