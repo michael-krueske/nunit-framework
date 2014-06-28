@@ -26,6 +26,7 @@ using System.Reflection;
 
 // Information about this assembly is defined by the following attributes. 
 // Change them to the _values specific to your project.
+using System.Runtime.CompilerServices;
 
 #if NUNITLITE
 [assembly: AssemblyTitle("NUnitLite")]
@@ -36,3 +37,5 @@ using System.Reflection;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyCulture("")]
 [assembly: CLSCompliant(true)]
+
+[assembly: InternalsVisibleTo("nunit.framework.tests-4.5, PublicKey=002400000480000094000000060200000024000052534131000400000100010031EEA370B1984BFA6D1EA760E1CA6065CEE41A1A279CA234933FE977A096222C0E14F9E5A17D5689305C6D7F1206A85A53C48CA010080799D6EEEF61C98ABD18767827DC05DAEA6B6FBD2E868410D9BEE5E972A004DDD692DEC8FA404BA4591E847A8CF35DE21C2D3723BC8D775A66B594ADEB967537729FE2A446B548CD57A6")]

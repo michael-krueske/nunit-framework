@@ -193,14 +193,8 @@ namespace NUnit.Framework.Internal.Builders
 #if !NETCF
             if (testMethod.Method.IsGenericMethodDefinition)
             {
-                Type[] typeArguments = GenericTypeInferenceHelper.InferTypeArguments(testMethod.Method, arglist);
-                foreach (object o in typeArguments)
-                    if (o == null)
-                    {
-                        return MarkAsNotRunnable(testMethod, "Unable to determine type arguments for method");
-                    }
-
-                testMethod.Method = testMethod.Method.MakeGenericMethod(typeArguments);
+                MethodInfo method = testMethod.Method;
+                testMethod.Method = method.InferTypeArguments().FromActualArguments(arglist);
                 parameters = testMethod.Method.GetParameters();
             }
 #endif
