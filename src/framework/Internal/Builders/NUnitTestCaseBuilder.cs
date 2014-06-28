@@ -193,7 +193,7 @@ namespace NUnit.Framework.Internal.Builders
 #if !NETCF
             if (testMethod.Method.IsGenericMethodDefinition)
             {
-                Type[] typeArguments = GenericTypeInferenceHelper.GetTypeArgumentsForMethod(testMethod.Method, arglist);
+                Type[] typeArguments = GenericTypeInferenceHelper.InferTypeArguments(testMethod.Method, arglist);
                 foreach (object o in typeArguments)
                     if (o == null)
                     {

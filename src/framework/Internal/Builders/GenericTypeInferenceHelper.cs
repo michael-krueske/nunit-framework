@@ -15,7 +15,7 @@ namespace NUnit.Framework.Internal.Builders
         /// <param name="method"></param>
         /// <param name="arglist"></param>
         /// <returns></returns>
-        public static Type[] GetTypeArgumentsForMethod(MethodInfo method, object[] arglist)
+        public static Type[] InferTypeArguments(MethodInfo method, object[] arglist)
         {
             Type[] typeParameters = method.GetGenericArguments();
             Type[] typeArguments = new Type[typeParameters.Length];

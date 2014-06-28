@@ -8,7 +8,7 @@ namespace NUnit.Framework.Internal
 {
 #if !NETCF
     [TestFixture]
-    public class GenericTypeInferenceTests
+    public class GenericTypeInferenceHelperTests
     {
         private static readonly Expression<Action>[] TestCasesThatShouldWorkExactlyLikeTheCompiler =
         {
@@ -22,6 +22,11 @@ namespace NUnit.Framework.Internal
             () => SimpleGenericMethodWith2Args(0, 0), 
             () => SimpleGenericMethodWith2Args(0, 0L), 
             () => SimpleGenericMethodWith2Args(0L, 0.0), 
+            () => SimpleGenericMethodWith2Args(0L, 0M), 
+            () => SimpleGenericMethodWith2Args(0L, 0.0F), 
+            () => SimpleGenericMethodWith2Args(0.0F, 0.0F), 
+            () => SimpleGenericMethodWith2Args(0.0F, 0.0), 
+            //() => SimpleGenericMethodWith2Args(0.0, 0M), 
             () => MoreComplexGenericMethod((int?)0), 
         };
 
@@ -37,15 +42,18 @@ namespace NUnit.Framework.Internal
         [TestCaseSource("TestCasesThatShouldWorkExactlyLikeTheCompiler")]
         public void GetTypeArgumentsForMethod2(Expression<Action> genericMethodInvocation)
         {
-            var methodCallExpression = (genericMethodInvocation.Body as MethodCallExpression);
-            var methodInfo = methodCallExpression.Method;
+            MethodCallExpression methodCallExpression = (genericMethodInvocation.Body as MethodCallExpression);
             
-            var expected = methodInfo.GetGenericArguments();
+            MethodInfo methodInfo = methodCallExpression.Method;
+            object[] actualArguments =
+                (from argumentExpresssion in methodCallExpression.Arguments
+                select Expression.Lambda(argumentExpresssion).Compile().DynamicInvoke()
+                ).ToArray();
 
-            var arglist = methodCallExpression.Arguments.AsEnumerable().Select(x => Expression.Lambda(x).Compile().DynamicInvoke()).ToArray();
+            Type[] expectedTypeArguments = methodInfo.GetGenericArguments();
+            Type[] actualTypeArguments = GenericTypeInferenceHelper.InferTypeArguments(methodInfo, actualArguments);
 
-            Type[] typeArguments = GenericTypeInferenceHelper.GetTypeArgumentsForMethod(methodInfo, arglist);
-            Assert.That(typeArguments, Is.EqualTo(expected));
+            Assert.That(actualTypeArguments, Is.EqualTo(expectedTypeArguments));
         }
 
         public static void SimpleGenericMethod<TType>(TType arg)
